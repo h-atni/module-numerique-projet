@@ -14,6 +14,7 @@ Ce dépôt contient les deux parties demandées pour le module :
 - `tp/tp3_polynomes_fonctions.py` : solutions sur les polynômes, la dérivation, la recherche de racines et l’intégration.
 - `tp/tp4_matrices_systemes_lineaires.py` : solutions sur les matrices, le produit matriciel, le pivot de Gauss et les transformations géométriques.
 - `tp/tp5_chiffrement_affine.py` : solutions sur le chiffrement affine, le déchiffrement, les clés inversibles et les attaques par force brute et par fréquence.
+- `tp/tp6_geometrie_plan.py` : solutions sur les points, vecteurs, déterminants, intersections, aires, tests d’appartenance et géométrie algorithmique.
 - `projet/README.md` : description du projet.
 - `projet/newton_basins.py` : script principal du projet.
 - `projet/requirements.txt` : dépendances Python.
