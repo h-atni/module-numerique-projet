@@ -3,22 +3,23 @@
 Ce dépôt contient les deux parties demandées pour le module :
 
 - `tp/` : solutions des travaux pratiques.
-- `projet/` : projet personnel axé sur les notions vues en cours.
+- `projet/` : projet personnel basé sur les notions vues en cours.
 
 ## Structure du dépôt
 
 - `README.md` : présentation générale du dépôt.
-- `tp/README.md` : présentation du travail de TP.
-- `tp/tp1_nombres_flottants.py` : solutions Python des exercices de base.
+- `tp/README.md` : présentation des TP.
+- `tp/tp1_nombres_flottants.py` : solutions sur les entiers, les flottants, les boucles, les fonctions et Héron.
+- `tp/tp2_arithmetique_nombres_premiers.py` : solutions sur les diviseurs, le PGCD, la primalité, le crible et la factorisation.
 - `projet/README.md` : description du projet.
-- `projet/newton_basins.py` : programme principal du projet.
-- `projet/requirements.txt` : dépendances nécessaires.
+- `projet/newton_basins.py` : script principal du projet.
+- `projet/requirements.txt` : dépendances Python.
 
 ## Projet retenu
 
 Le projet porte sur les bassins d'attraction de Newton dans le plan complexe.
 
-Le but est de visualiser, pour un polynôme complexe donné, les régions du plan qui convergent vers chaque racine lorsqu'on applique la méthode de Newton. Cela permet de relier :
+Le but est de visualiser, pour un polynôme complexe donné, les régions du plan qui convergent vers chaque racine lorsque la méthode de Newton est appliquée. Cela permet de relier :
 
 - les flottants et les erreurs d'arrondi,
 - la convergence d'une méthode itérative,
@@ -26,12 +27,12 @@ Le but est de visualiser, pour un polynôme complexe donné, les régions du pla
 - la géométrie du plan complexe,
 - l'importance de la stabilité numérique.
 
-Ce projet est volontairement limité à un cas simple mais exploitable : le polynôme z^3 - 1. Il suffit pour observer immédiatement le comportement fractal, ainsi que les zones de convergence et les frontières instables.
+Le cas choisi est le polynôme z^3 - 1, dont les racines sont simples et connues. Il suffit pour observer immédiatement les zones de convergence ainsi que les frontières très fines entre bassins.
 
-## Intention de travail
+## Notes pédagogiques
 
-Les solutions TP sont présentées sous forme de script exécutable. Le projet est autonome, avec un README détaillé et un script d'illustration.
+Les contenus TP sont présentés sous forme de scripts exécutable, avec des fonctions, des vérifications et quelques commentaires. Le projet est autonome, avec un README et un programme d'illustration.
 
-## Note sur l'usage de l'IA
+## Usage de l'IA
 
-Le dépôt a été rédigé avec une logique d'apprentissage et de vérification manuelle. Les scripts ont été pensés pour rester lisibles, testables et explicites, plutôt que purement générés de façon automatique.
+Le dépôt a été rédigé dans un esprit d'apprentissage et de vérification manuelle. Les scripts restent lisibles, explicites et testables, plutôt que purement générés sans contrôle.
