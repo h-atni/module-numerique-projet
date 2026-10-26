@@ -11,6 +11,9 @@ Ce dépôt contient les deux parties demandées pour le module :
 - `tp/README.md` : présentation des TP.
 - `tp/tp1_nombres_flottants.py` : solutions sur les entiers, les flottants, les boucles, les fonctions et Héron.
 - `tp/tp2_arithmetique_nombres_premiers.py` : solutions sur les diviseurs, le PGCD, la primalité, le crible et la factorisation.
+- `tp/tp3_polynomes_fonctions.py` : solutions sur les polynômes, la dérivation, la recherche de racines et l’intégration.
+- `tp/tp4_matrices_systemes_lineaires.py` : solutions sur les matrices, le produit matriciel, le pivot de Gauss et les transformations géométriques.
+- `tp/tp5_chiffrement_affine.py` : solutions sur le chiffrement affine, le déchiffrement, les clés inversibles et les attaques par force brute et par fréquence.
 - `projet/README.md` : description du projet.
 - `projet/newton_basins.py` : script principal du projet.
 - `projet/requirements.txt` : dépendances Python.
@@ -31,7 +34,7 @@ Le cas choisi est le polynôme z^3 - 1, dont les racines sont simples et connues
 
 ## Notes pédagogiques
 
-Les contenus TP sont présentés sous forme de scripts exécutable, avec des fonctions, des vérifications et quelques commentaires. Le projet est autonome, avec un README et un programme d'illustration.
+Les contenus TP sont présentés sous forme de scripts exécutables, avec des fonctions, des vérifications et quelques commentaires. Le projet est autonome, avec un README et un programme d'illustration.
 
 ## Usage de l'IA
 
