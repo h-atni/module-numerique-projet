@@ -1,42 +1,70 @@
-# Module de calcul scientifique — TP + projet
+# Module de calcul scientifique — TP + projet personnel
 
-Ce dépôt contient les deux parties demandées pour le module :
+Ce dépôt contient les deux éléments demandés pour le module :
 
-- `tp/` : solutions des travaux pratiques.
-- `projet/` : projet personnel basé sur les notions vues en cours.
+- `tp/` : les solutions aux travaux pratiques.
+- `projet/` : un projet personnel cohérent avec les notions vues en cours.
+
+Le dépôt est organisé de façon simple et lisible, avec le README principal à la racine pour présenter le travail global.
 
 ## Structure du dépôt
 
 - `README.md` : présentation générale du dépôt.
-- `tp/README.md` : présentation des TP.
-- `tp/tp1_nombres_flottants.py` : solutions sur les entiers, les flottants, les boucles, les fonctions et Héron.
-- `tp/tp2_arithmetique_nombres_premiers.py` : solutions sur les diviseurs, le PGCD, la primalité, le crible et la factorisation.
-- `tp/tp3_polynomes_fonctions.py` : solutions sur les polynômes, la dérivation, la recherche de racines et l’intégration.
-- `tp/tp4_matrices_systemes_lineaires.py` : solutions sur les matrices, le produit matriciel, le pivot de Gauss et les transformations géométriques.
-- `tp/tp5_chiffrement_affine.py` : solutions sur le chiffrement affine, le déchiffrement, les clés inversibles et les attaques par force brute et par fréquence.
-- `tp/tp6_geometrie_plan.py` : solutions sur les points, vecteurs, déterminants, intersections, aires, tests d’appartenance et géométrie algorithmique.
-- `projet/README.md` : description du projet.
-- `projet/newton_basins.py` : script principal du projet.
-- `projet/requirements.txt` : dépendances Python.
+- `tp/tp1_nombres_flottants.py` : entiers, flottants, boucles, fonctions, comparaison avec tolérance, Héron.
+- `tp/tp2_arithmetique_nombres_premiers.py` : diviseurs, PGCD, primalité, crible d’Ératosthène, factorisation, coût des algorithmes.
+- `tp/tp3_polynomes_fonctions.py` : représentation des polynômes, Horner, dérivation, dichotomie, Newton, intégration numérique.
+- `tp/tp4_matrices_systemes_lineaires.py` : matrices, transposition, produit matriciel, pivot de Gauss, résolution de systèmes, numpy.
+- `tp/tp5_chiffrement_affine.py` : arithmétique modulaire, clés inversibles, chiffrement affine, force brute, analyse de fréquence.
+- `tp/tp6_geometrie_plan.py` : points, vecteurs, déterminant, aires orientées, intersection de segments, point dans un polygone.
+- `projet/newton_basins.py` : programme principal du projet.
+- `projet/requirements.txt` : dépendances Python du projet.
 
-## Projet retenu
+## Projet personnel
 
-Le projet porte sur les bassins d'attraction de Newton dans le plan complexe.
+Le projet choisi est : les bassins d'attraction de Newton dans le plan complexe.
 
-Le but est de visualiser, pour un polynôme complexe donné, les régions du plan qui convergent vers chaque racine lorsque la méthode de Newton est appliquée. Cela permet de relier :
+### Idée
 
-- les flottants et les erreurs d'arrondi,
-- la convergence d'une méthode itérative,
-- la recherche de racines d'un polynôme,
-- la géométrie du plan complexe,
-- l'importance de la stabilité numérique.
+On applique la méthode de Newton à un polynôme complexe. À chaque point du plan, on suit la suite itérative
 
-Le cas choisi est le polynôme z^3 - 1, dont les racines sont simples et connues. Il suffit pour observer immédiatement les zones de convergence ainsi que les frontières très fines entre bassins.
+z_{n+1} = z_n - f(z_n) / f'(z_n)
 
-## Notes pédagogiques
+et on détermine vers quelle racine la suite converge. En colorant le plan selon cette racine, on obtient des bassins d'attraction : des figures fractales de grande beauté et très utiles pour illustrer la convergence des méthodes itératives.
 
-Les contenus TP sont présentés sous forme de scripts exécutables, avec des fonctions, des vérifications et quelques commentaires. Le projet est autonome, avec un README et un programme d'illustration.
+### Ce que le projet mobilise
 
-## Usage de l'IA
+- flottants et erreurs d'arrondi,
+- calcul numérique et convergence,
+- recherche de racines,
+- polynômes et dérivation,
+- géométrie du plan complexe,
+- visualisation et interprétation des résultats.
 
-Le dépôt a été rédigé dans un esprit d'apprentissage et de vérification manuelle. Les scripts restent lisibles, explicites et testables, plutôt que purement générés sans contrôle.
+### Lancer le projet
+
+```bash
+cd projet
+python3 -m pip install -r requirements.txt
+python3 newton_basins.py
+```
+
+Le script produit une image `newton_bassin.png` dans le dossier `projet/`.
+
+## Pédagogie du dépôt
+
+Les exercices sont écrits sous forme de scripts Python exécutables et commentés, afin de montrer à la fois :
+
+- la compréhension des notions,
+- le raisonnement derrière chaque algorithme,
+- les vérifications effectuées,
+- et l'interprétation des résultats.
+
+L'objectif n'est pas d'obtenir un code parfait sans réflexion, mais de rendre visible le travail réel mené sur les notions du module.
+
+## Remarque sur l'IA
+
+L'usage de l'IA n'est ni obligatoire ni interdit. Ici, le dépôt a été pensé dans un esprit d'apprentissage et de vérification personnelle : les scripts ont été adaptés, adaptés, testés et expliqués pour rester lisibles et exploitables.
+
+## Conclusion
+
+Ce dépôt présente à la fois les travaux pratiques du module et un projet personnel cohérent avec les notions vues pendant le semestre. La partie projet est la plus importante pour l'évaluation, car elle montre la capacité à exploiter les méthodes numériques de manière concrète, critique et structurée.
