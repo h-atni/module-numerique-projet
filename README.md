@@ -16,7 +16,8 @@ Le dépôt est organisé de façon simple et lisible, avec le README principal �
 - `tp/tp4_matrices_systemes_lineaires.py` : matrices, transposition, produit matriciel, pivot de Gauss, résolution de systèmes, numpy.
 - `tp/tp5_chiffrement_affine.py` : arithmétique modulaire, clés inversibles, chiffrement affine, force brute, analyse de fréquence.
 - `tp/tp6_geometrie_plan.py` : points, vecteurs, déterminant, aires orientées, intersection de segments, point dans un polygone.
-- `projet/newton_basins.py` : programme principal du projet.
+- `projet/newton_basins.py` : programme principal du projet (bassins de Newton, frontière, comparaison avec la dichotomie).
+- `projet/README.md` : question posée, résultats mesurés, limites.
 - `projet/requirements.txt` : dépendances Python du projet.
 
 ## Projet personnel
@@ -48,7 +49,7 @@ python3 -m pip install -r requirements.txt
 python3 newton_basins.py
 ```
 
-Le script produit une image `newton_bassin.png` dans le dossier `projet/`.
+Le script produit `bassins.png`, `comptage_boites.png` et `resultats.txt` dans le dossier `projet/` (environ une minute).
 
 ## Pédagogie du dépôt
 
@@ -63,7 +64,7 @@ L'objectif n'est pas d'obtenir un code parfait sans réflexion, mais de rendre v
 
 ## Remarque sur l'IA
 
-L'usage de l'IA n'est ni obligatoire ni interdit. Ici, le dépôt a été pensé dans un esprit d'apprentissage et de vérification personnelle : les scripts ont été adaptés, adaptés, testés et expliqués pour rester lisibles et exploitables.
+Je me suis aidé de l'intelligence artificielle afin d'avoir des exemples d'utilisation de certaines partie du code afin de pouvoir les réutiliser de la bonne façon appliqué à mon projet
 
 ## Conclusion
 
