@@ -2,7 +2,7 @@
 
 ## Question posée
 
-La méthode de Newton permet de trouver, à partir d'un point de départ, une racine d'un polynôme. Dans le plan complexe, ce point de départ décide de la racine atteinte. Que devient ce partage du plan quand on change de polynôme, et que peut-on mesurer sur la frontière entre les bassins ?**
+La méthode de Newton permet de trouver, à partir d'un point de départ, une racine d'un polynôme. Dans le plan complexe, ce point de départ décide de la racine atteinte. **Que devient ce partage du plan quand on change de polynôme, et que peut-on mesurer sur la frontière entre les bassins ?**
 
 ## Ce que fait le programme
 
