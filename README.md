@@ -52,7 +52,7 @@ Les exercices sont des scripts Python exécutables et commentés. Ils montrent l
 
 ## Remarque sur l'IA
 
-J'ai utilisé l'assistant Claude (Anthropic) pour écrire le code du projet et une première version des README. J'ai ensuite [relancé le script / relu le code / rédigé l'interprétation moi-même : garde seulement ce qui est vrai]. Le détail est dans `projet/README.md`.
+Je me suis aidé de l'intelligence artificielle pour obtenir des exemples d'utilisation de certaines parties du code, afin de les réutiliser correctement dans mon projet
 
 ## Conclusion
 
