@@ -58,5 +58,4 @@ La dimension estimée de la frontière est entre 1,41 et 1,58, donc entre une li
 
 ## Usage de l'IA
 
-J'ai utilisé l'assistant Claude (Anthropic) pour écrire le code de `newton_basins.py` et une première version de ce README, à partir de ma demande d'étudier la frontière entre bassins.
-Ce que j'ai vérifié moi-même : **[À COMPLÉTER PAR MOI : par exemple relancé le script, relu le code, vérifié à la main un résultat comme le cas z^3 - 2z + 2 depuis x0 = 0]**.
+Je me suis aidé de claude afin de voir comment utiliser certaines partie du code afin de l'appliquer à mon projet.
