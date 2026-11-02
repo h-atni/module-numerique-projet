@@ -44,9 +44,17 @@ Compter environ une minute. Le script écrit `bassins.png`, `comptage_boites.png
 - La classification utilise `np.roots` comme référence ; le critère de convergence est `|z - racine| < 1e-8`.
 - Je n'ai pas testé la sensibilité à la précision flottante ni à la résolution de la grille.
 
-## Observations et interprétation (à compléter)
+## Observations et interprétation
 
-> **[À COMPLÉTER PAR MOI avant le rendu]** : ce que je comprends de ces résultats avec mes mots, une chose qui m'a surpris, une idée testée qui n'a pas marché.
+Je m'attendais à voir trois grandes zones bien séparées, mais en zoomant sur la frontière, j'ai vu que les trois couleurs s'y mélangent à toutes les échelles. Entre deux bassins, on retrouve toujours le troisième.
+
+La carte du nombre d'itérations montre que les points les plus lents sont sur la frontière. Je l'explique ainsi : près de la frontière, un point de départ très proche d'un autre peut finir sur une racine différente, donc Newton met plus de temps à se décider.
+
+Pour z^3 - 2z + 2, environ 1 % des points ne convergent jamais, même avec 1000 itérations. Pour z^4 - 1, au contraire, le pourcentage baisse quand on augmente max_iter puis se stabilise. Pour z^3 - 2z + 2, ce n'est donc pas un manque d'itérations : sur la droite réelle, en partant de 0, Newton tourne entre 0 et 1 (f(0)=2 et f'(0)=-2 donnent 1, puis f(1)=1 et f'(1)=1 redonnent 0).
+
+Newton est beaucoup plus rapide que la dichotomie quand il marche (7 itérations contre 35 pour z^3 - 1), mais il peut échouer, alors que la dichotomie converge toujours si l'intervalle contient un changement de signe. Je retiens qu'il faut connaître le polynôme avant de choisir la méthode.
+
+La dimension estimée de la frontière est entre 1,41 et 1,58, donc entre une ligne (1) et une surface (2), ce qui correspond à l'idée d'une frontière fractale. Je reste prudent : c'est une estimation par comptage de boîtes, pas une valeur exacte.
 
 ## Usage de l'IA
 
