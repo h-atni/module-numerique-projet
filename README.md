@@ -64,7 +64,7 @@ L'objectif n'est pas d'obtenir un code parfait sans réflexion, mais de rendre v
 
 ## Remarque sur l'IA
 
-J'ai utilisé l'assistant Claude (Anthropic) pour le code du projet et la rédaction des README. Le détail de ce que j'ai vérifié moi-même est dans `projet/README.md`.
+Je me suis aidé de l'intelligence artificielle afin d'avoir des exemples d'utilisation de certaines partie du code afin de pouvoir les réutiliser de la bonne façon appliqué à mon projet
 
 ## Conclusion
 
