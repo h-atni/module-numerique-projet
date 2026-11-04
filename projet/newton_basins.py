@@ -1,216 +1,204 @@
 """Bassins d'attraction de Newton dans le plan complexe.
 
-Le script :
-  1. calcule, pour plusieurs polynômes, la racine atteinte et le nombre
-     d'itérations nécessaires depuis chaque point du plan ;
-  2. repère les points qui ne convergent pas (cycles, divergence) ;
-  3. mesure l'effet du nombre maximal d'itérations sur ces points ;
-  4. estime la dimension de la frontière entre bassins (comptage de boîtes) ;
-  5. compare Newton et dichotomie sur la droite réelle.
+  python newton_basins.py             calcul complet
+  python newton_basins.py --rapide    résolutions réduites, pour tester
+  python newton_basins.py --afficher  ouvre aussi les figures
 
-Lancement :  python3 newton_basins.py
-Sorties   :  images .png et fichier resultats.txt dans le dossier projet/.
+Sorties : bassins.png, comptage_boites.png, resultats.txt
 """
 
+import sys
+import time
 from pathlib import Path
 
 import matplotlib
 
-matplotlib.use("Agg")
+AFFICHER = "--afficher" in sys.argv
+if not AFFICHER:
+    matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
 DOSSIER = Path(__file__).parent
 
-# Polynômes étudiés : coefficients par degré décroissant (convention de Horner).
+RAPIDE = "--rapide" in sys.argv
+RES = 300 if RAPIDE else 600
+RES_FIN = 512 if RAPIDE else 2048
+MAX_ITER = 1000
+SEUILS = (30, 60, 200, 1000)
+MAX_AFFICHAGE = 60
+
+# P[i] = coefficient de x^i (convention du TP3)
 POLYNOMES = {
-    "z^3 - 1": [1, 0, 0, -1],
-    "z^4 - 1": [1, 0, 0, 0, -1],
-    "z^3 - 2z + 2": [1, 0, -2, 2],
+    "z^3 - 1": [-1, 0, 0, 1],
+    "z^4 - 1": [-1, 0, 0, 0, 1],
+    "z^3 - 2z + 2": [2, -2, 0, 1],
 }
 
 
-# ---------------------------------------------------------------------------
-# Polynômes : Horner et dérivée (écrits à la main, comme en TP3)
-# ---------------------------------------------------------------------------
-
-def horner(coeffs, z):
-    """Évalue le polynôme en z (z peut être un tableau numpy complexe)."""
-    resultat = np.zeros_like(z, dtype=complex)
-    for c in coeffs:
-        resultat = resultat * z + c
-    return resultat
+def evaluer(P, x):
+    total = 0
+    for coefficient in reversed(P):
+        total = total * x + coefficient
+    return total
 
 
-def derivee(coeffs):
-    """Coefficients de la dérivée."""
-    n = len(coeffs) - 1
-    return [c * (n - i) for i, c in enumerate(coeffs[:-1])]
+def deriver(P):
+    if len(P) <= 1:
+        return []
+    return [i * P[i] for i in range(1, len(P))]
 
 
-def racines_reference(coeffs):
-    """Racines de référence, uniquement pour classer les points.
-
-    On utilise np.roots comme point de comparaison, pas comme moteur de
-    la recherche : les itérations de Newton sont faites ci-dessous.
-    """
-    return np.roots(coeffs)
+def racines_reference(P):
+    return np.roots(P[::-1])
 
 
-# ---------------------------------------------------------------------------
-# Itération de Newton vectorisée
-# ---------------------------------------------------------------------------
-
-def grille(demi_largeur=2.0, res=600, centre=0j):
-    x = np.linspace(centre.real - demi_largeur, centre.real + demi_largeur, res)
-    y = np.linspace(centre.imag - demi_largeur, centre.imag + demi_largeur, res)
-    return x[None, :] + 1j * y[:, None]
+def grille(demi_largeur=2.0, res=600):
+    x = np.linspace(-demi_largeur, demi_largeur, res)
+    return x[None, :] + 1j * x[:, None]
 
 
-def newton_plan(coeffs, z0, tol=1e-8, max_iter=60):
-    """Applique Newton à tous les points z0 en même temps.
-
-    Renvoie (indice de racine, nombre d'itérations) ; indice = -1 si le
-    point n'a pas convergé après max_iter itérations.
-    """
-    p = coeffs
-    dp = derivee(coeffs)
-    racines = racines_reference(coeffs)
-    z = z0.copy()
-    indice = -np.ones(z.shape, dtype=int)
-    iterations = np.full(z.shape, max_iter, dtype=int)
-    actif = np.ones(z.shape, dtype=bool)
+def newton_plan(P, z0, tol=1e-8, max_iter=60):
+    """Renvoie (indice de racine, itérations, racines) ; indice = -1 si non convergé."""
+    dP = deriver(P)
+    racines = racines_reference(P)
+    forme = z0.shape
+    indice = np.full(z0.size, -1, dtype=int)
+    iterations = np.full(z0.size, max_iter, dtype=int)
+    actifs = np.arange(z0.size)
+    z = z0.ravel().astype(complex)
 
     with np.errstate(all="ignore"):
         for k in range(1, max_iter + 1):
-            d = horner(dp, z[actif])
-            z[actif] = z[actif] - horner(p, z[actif]) / d
-            # on classe les points qui viennent d'arriver près d'une racine
+            z = z - evaluer(P, z) / evaluer(dP, z)
+            fini = ~np.isfinite(z)
             for i, r in enumerate(racines):
-                proche = actif & (np.abs(z - r) < tol)
-                indice[proche] = i
-                iterations[proche] = k
-                actif &= ~proche
-            # les points devenus nan/inf (dérivée nulle) sont abandonnés
-            actif &= np.isfinite(z)
-            if not actif.any():
+                proche = (np.abs(z - r) < tol) & ~fini
+                indice[actifs[proche]] = i
+                iterations[actifs[proche]] = k
+                fini |= proche
+            actifs, z = actifs[~fini], z[~fini]
+            if actifs.size == 0:
                 break
-    return indice, iterations, racines
+    return indice.reshape(forme), iterations.reshape(forme), racines
 
-
-# ---------------------------------------------------------------------------
-# Frontière et comptage de boîtes
-# ---------------------------------------------------------------------------
 
 def frontiere(indice):
-    """Pixels dont au moins un voisin (4-connexité) est dans un autre bassin."""
     f = np.zeros(indice.shape, dtype=bool)
-    f[:-1, :] |= indice[:-1, :] != indice[1:, :]
-    f[1:, :] |= indice[:-1, :] != indice[1:, :]
-    f[:, :-1] |= indice[:, :-1] != indice[:, 1:]
-    f[:, 1:] |= indice[:, :-1] != indice[:, 1:]
+    haut_bas = indice[:-1, :] != indice[1:, :]
+    gauche_droite = indice[:, :-1] != indice[:, 1:]
+    f[:-1, :] |= haut_bas
+    f[1:, :] |= haut_bas
+    f[:, :-1] |= gauche_droite
+    f[:, 1:] |= gauche_droite
     return f
 
 
-def dimension_boites(masque, tailles=(2, 4, 8, 16, 32, 64)):
-    """Estime la dimension de la frontière par comptage de boîtes.
-
-    Pour chaque taille s, on compte N(s) boîtes s x s contenant au moins
-    un pixel de frontière. La pente de log N(s) en fonction de log(1/s)
-    estime la dimension. Renvoie (dimension, tailles, comptes).
-    """
+def dimension_boites(masque):
+    """Dimension de la frontière : pente de log N(s) en fonction de log(1/s)."""
     n = masque.shape[0]
+    kmax = int(np.log2(n)) - 5
+    tailles = [2 ** k for k in range(2, kmax + 1)]
     comptes = []
     for s in tailles:
         m = (n // s) * s
         blocs = masque[:m, :m].reshape(m // s, s, m // s, s).any(axis=(1, 3))
-        comptes.append(blocs.sum())
+        comptes.append(int(blocs.sum()))
     pente, _ = np.polyfit(np.log(1.0 / np.array(tailles)), np.log(comptes), 1)
     return pente, tailles, comptes
 
 
-# ---------------------------------------------------------------------------
-# Newton contre dichotomie sur la droite réelle
-# ---------------------------------------------------------------------------
-
-def newton_reel(coeffs, x0, tol=1e-10, max_iter=100):
-    """Newton réel. Renvoie (x, nb d'itérations, convergé ?)."""
-    dp = derivee(coeffs)
-    x = complex(x0)
-    for k in range(1, max_iter + 1):
-        d = horner(dp, np.array(x))
-        if d == 0:
-            return x.real, k, False
-        x_new = x - horner(coeffs, np.array(x)) / d
-        if abs(x_new - x) < tol:
-            return x_new.real, k, True
-        x = x_new
-    return x.real, max_iter, False
+def newton(P, depart, tolerance=1e-12, tours_max=100):
+    derivee = deriver(P)
+    x = float(depart)
+    for tour in range(tours_max):
+        valeur = evaluer(P, x)
+        pente = evaluer(derivee, x)
+        if pente == 0:
+            raise ZeroDivisionError("tangente horizontale")
+        suivant = x - valeur / pente
+        if abs(suivant - x) <= tolerance * max(1.0, abs(suivant)):
+            return suivant, tour + 1
+        x = suivant
+    raise RuntimeError(f"pas de convergence en {tours_max} tours (cycle ?)")
 
 
-def dichotomie(coeffs, a, b, tol=1e-10):
-    """Dichotomie sur [a, b] ; suppose un changement de signe."""
-    fa = horner(coeffs, np.array(a)).real
-    k = 0
-    while b - a > tol:
-        k += 1
-        m = (a + b) / 2
-        fm = horner(coeffs, np.array(m)).real
+def dichotomie(f, a, b, tolerance=1e-12):
+    fa, fb = f(a), f(b)
+    if fa * fb > 0:
+        raise ValueError("f(a) et f(b) doivent être de signes opposés")
+    tours = 0
+    while b - a > tolerance:
+        tours += 1
+        milieu = (a + b) / 2
+        fm = f(milieu)
         if fa * fm <= 0:
-            b = m
+            b = milieu
         else:
-            a, fa = m, fm
-    return (a + b) / 2, k
+            a, fa = milieu, fm
+    return (a + b) / 2, tours
 
 
-# ---------------------------------------------------------------------------
-# Programme principal
-# ---------------------------------------------------------------------------
+def comparer(nom, P, x0, a, b):
+    try:
+        xn, kn = newton(P, x0)
+        texte_newton = f"Newton depuis x0={x0} -> {xn:.8f} en {kn} itérations"
+    except (ZeroDivisionError, RuntimeError) as erreur:
+        texte_newton = f"Newton depuis x0={x0} -> ECHEC ({erreur})"
+    xd, kd = dichotomie(lambda x: evaluer(P, x), a, b)
+    return (f"{nom} : {texte_newton} ; "
+            f"dichotomie sur [{a}, {b}] -> {xd:.8f} en {kd} itérations")
+
 
 def main():
     lignes = []
 
     def log(texte=""):
-        print(texte)
+        print(texte, flush=True)
         lignes.append(texte)
+
+    debut_total = time.perf_counter()
+    log(f"Mode {'rapide' if RAPIDE else 'complet'} : "
+        f"images {RES}x{RES}, frontière {RES_FIN}x{RES_FIN}")
+    log()
 
     fig, axes = plt.subplots(2, 3, figsize=(15, 9))
     bilan_frontiere = {}
+    ext = [-2, 2, -2, 2]
+    cmap_bassins = plt.get_cmap("viridis").copy()
+    cmap_bassins.set_bad("black")
 
-    for col, (nom, coeffs) in enumerate(POLYNOMES.items()):
-        z0 = grille(2.0, 600)
-        indice, iters, racines = newton_plan(coeffs, z0)
-        ext = [-2, 2, -2, 2]
+    for col, (nom, P) in enumerate(POLYNOMES.items()):
+        t0 = time.perf_counter()
 
-        # Ligne 1 : bassins (couleur = racine, -1 en noir)
-        couleurs = np.where(indice < 0, np.nan, indice)
-        axes[0, col].imshow(couleurs, origin="lower", extent=ext, cmap="viridis")
-        axes[0, col].imshow(np.where(indice < 0, 1.0, np.nan), origin="lower",
-                            extent=ext, cmap="gray_r", vmin=0, vmax=1)
+        # un seul calcul à max_iter=1000 ; les autres seuils s'en déduisent
+        indice, iters, racines = newton_plan(P, grille(2.0, RES), max_iter=MAX_ITER)
+        converge = (indice >= 0) & (iters <= MAX_AFFICHAGE)
+        indice_aff = np.where(converge, indice, -1)
+        iters_aff = np.minimum(iters, MAX_AFFICHAGE)
+
+        axes[0, col].imshow(np.ma.masked_where(indice_aff < 0, indice_aff),
+                            origin="lower", extent=ext, cmap=cmap_bassins)
         axes[0, col].set_title(f"Bassins : {nom}")
-        # Ligne 2 : nombre d'itérations
-        im = axes[1, col].imshow(iters, origin="lower", extent=ext, cmap="magma")
+        im = axes[1, col].imshow(iters_aff, origin="lower", extent=ext, cmap="magma")
         axes[1, col].set_title("Itérations avant convergence")
         fig.colorbar(im, ax=axes[1, col], shrink=0.8)
 
-        non_conv = np.mean(indice < 0)
         log(f"== {nom} ==")
         log(f"racines (référence) : {np.round(racines, 4)}")
-        log(f"points non convergés : {100 * non_conv:.2f} %")
-        log(f"itérations moyennes (points convergés) : "
-            f"{iters[indice >= 0].mean():.2f}")
+        log(f"points non convergés (max_iter={MAX_AFFICHAGE}) : "
+            f"{100 * np.mean(~converge):.2f} %")
+        log(f"itérations moyennes (points convergés) : {iters[converge].mean():.2f}")
 
-        # Effet du nombre maximal d'itérations sur les points non convergés
-        for mi in (30, 60, 200, 1000):
-            ind_m, _, _ = newton_plan(coeffs, z0, max_iter=mi)
-            log(f"  max_iter={mi:4d} -> non convergés : {100 * np.mean(ind_m < 0):.2f} %")
+        for mi in SEUILS:
+            non_conv = np.mean(~((indice >= 0) & (iters <= mi)))
+            log(f"  max_iter={mi:4d} -> non convergés : {100 * non_conv:.2f} %")
 
-        # Dimension de la frontière (résolution plus fine)
-        z_fin = grille(2.0, 2048)
-        ind_fin, _, _ = newton_plan(coeffs, z_fin)
+        ind_fin, _, _ = newton_plan(P, grille(2.0, RES_FIN), max_iter=MAX_AFFICHAGE)
         dim, tailles, comptes = dimension_boites(frontiere(ind_fin))
         bilan_frontiere[nom] = (tailles, comptes)
         log(f"dimension estimée de la frontière (comptage de boîtes) : {dim:.3f}")
+        log(f"(durée : {time.perf_counter() - t0:.1f} s)")
         log()
 
     for ax in axes.ravel():
@@ -218,35 +206,30 @@ def main():
         ax.set_ylabel("Im")
     fig.tight_layout()
     fig.savefig(DOSSIER / "bassins.png", dpi=130)
-    plt.close(fig)
 
-    # Droite log-log du comptage de boîtes
-    fig, ax = plt.subplots(figsize=(6, 5))
+    fig2, ax = plt.subplots(figsize=(6, 5))
     for nom, (tailles, comptes) in bilan_frontiere.items():
         ax.loglog(1 / np.array(tailles), comptes, "o-", label=nom)
     ax.set_xlabel("1 / taille de boîte")
     ax.set_ylabel("N(boîtes touchant la frontière)")
     ax.set_title("Comptage de boîtes")
     ax.legend()
-    fig.tight_layout()
-    fig.savefig(DOSSIER / "comptage_boites.png", dpi=130)
-    plt.close(fig)
+    fig2.tight_layout()
+    fig2.savefig(DOSSIER / "comptage_boites.png", dpi=130)
 
-    # Newton contre dichotomie : cas favorable puis cas où Newton échoue
     log("== Newton contre dichotomie (droite réelle) ==")
-    cas = [
-        ("z^3 - 1", [1, 0, 0, -1], 0.5, (0.0, 2.0)),
-        ("z^3 - 2z + 2", [1, 0, -2, 2], 0.0, (-3.0, 0.0)),
-    ]
-    for nom, coeffs, x0, (a, b) in cas:
-        xn, kn, ok = newton_reel(coeffs, x0)
-        xd, kd = dichotomie(coeffs, a, b)
-        etat = "converge" if ok else "ECHEC (cycle ou dérivée nulle)"
-        log(f"{nom} : Newton depuis x0={x0} -> {etat} en {kn} itérations ; "
-            f"dichotomie sur [{a}, {b}] -> {xd:.8f} en {kd} itérations")
+    log(comparer("z^3 - 1", POLYNOMES["z^3 - 1"], 0.5, 0.0, 2.0))
+    log(comparer("z^3 - 2z + 2", POLYNOMES["z^3 - 2z + 2"], -2.0, -3.0, 0.0))
+    log(comparer("z^3 - 2z + 2", POLYNOMES["z^3 - 2z + 2"], 0.0, -3.0, 0.0))
     log()
+    log(f"Durée totale : {time.perf_counter() - debut_total:.1f} s")
 
     (DOSSIER / "resultats.txt").write_text("\n".join(lignes), encoding="utf-8")
+
+    if AFFICHER:
+        plt.show()
+    else:
+        plt.close("all")
 
 
 if __name__ == "__main__":
