@@ -1,33 +1,41 @@
+Mode rapide : images 300x300, frontière 512x512
+
 == z^3 - 1 ==
 racines (référence) : [-0.5+0.866j -0.5-0.866j  1. +0.j   ]
-points non convergés : 0.00 %
+points non convergés (max_iter=60) : 0.00 %
 itérations moyennes (points convergés) : 7.26
   max_iter=  30 -> non convergés : 0.04 %
   max_iter=  60 -> non convergés : 0.00 %
   max_iter= 200 -> non convergés : 0.00 %
   max_iter=1000 -> non convergés : 0.00 %
-dimension estimée de la frontière (comptage de boîtes) : 1.465
+dimension estimée de la frontière (comptage de boîtes) : 1.461
+(durée : 0.2 s)
 
 == z^4 - 1 ==
 racines (référence) : [-1.+0.j  0.+1.j  0.-1.j  1.+0.j]
-points non convergés : 0.36 %
-itérations moyennes (points convergés) : 9.52
-  max_iter=  30 -> non convergés : 1.48 %
-  max_iter=  60 -> non convergés : 0.36 %
-  max_iter= 200 -> non convergés : 0.26 %
-  max_iter=1000 -> non convergés : 0.26 %
-dimension estimée de la frontière (comptage de boîtes) : 1.579
+points non convergés (max_iter=60) : 0.67 %
+itérations moyennes (points convergés) : 9.48
+  max_iter=  30 -> non convergés : 1.83 %
+  max_iter=  60 -> non convergés : 0.67 %
+  max_iter= 200 -> non convergés : 0.54 %
+  max_iter=1000 -> non convergés : 0.54 %
+dimension estimée de la frontière (comptage de boîtes) : 1.599
+(durée : 0.4 s)
 
 == z^3 - 2z + 2 ==
 racines (référence) : [-1.7693+0.j      0.8846+0.5897j  0.8846-0.5897j]
-points non convergés : 1.07 %
+points non convergés (max_iter=60) : 1.06 %
 itérations moyennes (points convergés) : 7.05
   max_iter=  30 -> non convergés : 1.07 %
-  max_iter=  60 -> non convergés : 1.07 %
-  max_iter= 200 -> non convergés : 1.07 %
-  max_iter=1000 -> non convergés : 1.07 %
-dimension estimée de la frontière (comptage de boîtes) : 1.408
+  max_iter=  60 -> non convergés : 1.06 %
+  max_iter= 200 -> non convergés : 1.06 %
+  max_iter=1000 -> non convergés : 1.06 %
+dimension estimée de la frontière (comptage de boîtes) : 1.418
+(durée : 0.3 s)
 
 == Newton contre dichotomie (droite réelle) ==
-z^3 - 1 : Newton depuis x0=0.5 -> converge en 7 itérations ; dichotomie sur [0.0, 2.0] -> 1.00000000 en 35 itérations
-z^3 - 2z + 2 : Newton depuis x0=0.0 -> ECHEC (cycle ou dérivée nulle) en 100 itérations ; dichotomie sur [-3.0, 0.0] -> -1.76929235 en 35 itérations
+z^3 - 1 : Newton depuis x0=0.5 -> 1.00000000 en 8 itérations ; dichotomie sur [0.0, 2.0] -> 1.00000000 en 41 itérations
+z^3 - 2z + 2 : Newton depuis x0=-2.0 -> -1.76929235 en 5 itérations ; dichotomie sur [-3.0, 0.0] -> -1.76929235 en 42 itérations
+z^3 - 2z + 2 : Newton depuis x0=0.0 -> ECHEC (pas de convergence en 100 tours (cycle ?)) ; dichotomie sur [-3.0, 0.0] -> -1.76929235 en 42 itérations
+
+Durée totale : 2.2 s

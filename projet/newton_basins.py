@@ -23,7 +23,7 @@ DOSSIER = Path(__file__).parent
 
 RAPIDE = "--rapide" in sys.argv
 RES = 300 if RAPIDE else 600
-RES_FIN = 512 if RAPIDE else 2048
+RESOLUTIONS = (512, 1024) if RAPIDE else (512, 1024, 2048)
 MAX_ITER = 1000
 SEUILS = (30, 60, 200, 1000)
 MAX_AFFICHAGE = 60
@@ -159,7 +159,7 @@ def main():
 
     debut_total = time.perf_counter()
     log(f"Mode {'rapide' if RAPIDE else 'complet'} : "
-        f"images {RES}x{RES}, frontière {RES_FIN}x{RES_FIN}")
+        f"images {RES}x{RES}, frontière {RESOLUTIONS[-1]}x{RESOLUTIONS[-1]}")
     log()
 
     fig, axes = plt.subplots(2, 3, figsize=(15, 9))
@@ -167,17 +167,18 @@ def main():
     ext = [-2, 2, -2, 2]
     cmap_bassins = plt.get_cmap("viridis").copy()
     cmap_bassins.set_bad("black")
+    z0 = grille(2.0, RES)
 
     for col, (nom, P) in enumerate(POLYNOMES.items()):
         t0 = time.perf_counter()
 
         # un seul calcul à max_iter=1000 ; les autres seuils s'en déduisent
-        indice, iters, racines = newton_plan(P, grille(2.0, RES), max_iter=MAX_ITER)
+        indice, iters, racines = newton_plan(P, z0, max_iter=MAX_ITER)
         converge = (indice >= 0) & (iters <= MAX_AFFICHAGE)
         indice_aff = np.where(converge, indice, -1)
         iters_aff = np.minimum(iters, MAX_AFFICHAGE)
 
-        axes[0, col].imshow(np.ma.masked_where(indice_aff < 0, indice_aff),
+        axes[0, col].imshow(np.where(indice_aff < 0, np.nan, indice_aff),
                             origin="lower", extent=ext, cmap=cmap_bassins)
         axes[0, col].set_title(f"Bassins : {nom}")
         im = axes[1, col].imshow(iters_aff, origin="lower", extent=ext, cmap="magma")
@@ -194,10 +195,15 @@ def main():
             non_conv = np.mean(~((indice >= 0) & (iters <= mi)))
             log(f"  max_iter={mi:4d} -> non convergés : {100 * non_conv:.2f} %")
 
-        ind_fin, _, _ = newton_plan(P, grille(2.0, RES_FIN), max_iter=MAX_AFFICHAGE)
-        dim, tailles, comptes = dimension_boites(frontiere(ind_fin))
+        for res in RESOLUTIONS:
+            ind_fin, _, _ = newton_plan(P, grille(2.0, res), max_iter=MAX_AFFICHAGE)
+            dim, tailles, comptes = dimension_boites(frontiere(ind_fin))
+            log(f"dimension de la frontière, grille {res}x{res} : {dim:.3f}")
         bilan_frontiere[nom] = (tailles, comptes)
-        log(f"dimension estimée de la frontière (comptage de boîtes) : {dim:.3f}")
+
+        ind_tol, _, _ = newton_plan(P, z0, tol=1e-4, max_iter=MAX_AFFICHAGE)
+        log(f"pixels dont la racine change, tol 1e-4 au lieu de 1e-8 : "
+            f"{100 * np.mean(ind_tol != indice_aff):.3f} %")
         log(f"(durée : {time.perf_counter() - t0:.1f} s)")
         log()
 
