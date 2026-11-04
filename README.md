@@ -41,10 +41,12 @@ Le projet mobilise :
 ```bash
 cd projet
 python3 -m pip install -r requirements.txt
-python3 newton_basins.py
+python3 newton_basins.py             # calcul complet, environ 15 s
+python3 newton_basins.py --rapide    # résolutions réduites, pour tester
+python3 newton_basins.py --afficher  # ouvre aussi les figures
 ```
 
-Le script écrit `bassins.png`, `comptage_boites.png` et `resultats.txt` dans `projet/`. Il tourne en une minute environ.
+Le script écrit `bassins.png`, `comptage_boites.png` et `resultats.txt` dans `projet/`. Le temps dépend de la machine.
 
 ## Pédagogie du dépôt
 
