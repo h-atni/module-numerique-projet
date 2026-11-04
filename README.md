@@ -52,7 +52,7 @@ Les exercices sont des scripts Python exécutables et commentés. Ils montrent l
 
 ## Remarque sur l'IA
 
-Je me suis aidé de l'intelligence artificielle pour obtenir des exemples d'utilisation de certaines parties du code, afin de les réutiliser correctement dans mon projet
+Je me suis aidé de l'intelligence artificielle pour obtenir des exemples d'utilisation de certaines parties du code, afin de les réutiliser correctement dans mon projet ainsi que relire le README
 
 ## Conclusion
 
