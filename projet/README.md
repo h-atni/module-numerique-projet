@@ -60,4 +60,4 @@ La dimension estimée de la frontière tombe entre 1,40 et 1,57, donc entre une 
 
 ## Usage de l'IA
 
-Je me suis aidé de claude afin de voir comment utiliser certaines partie du code afin de l'appliquer à mon projet.
+Je me suis aidé de claude afin de voir comment utiliser certaines partie du code afin de l'appliquer à mon projet, optimiser le code avec numpy et relire le README.
